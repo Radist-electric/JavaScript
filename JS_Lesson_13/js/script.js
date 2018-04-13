@@ -325,26 +325,35 @@ document.addEventListener('scroll', function() {
 	persons.addEventListener('change', function() {
 		personsSum = +this.value;
 		total = daysSum*personsSum*ratio*4000;
+		console.log(ratio);
+		console.log(total);
 		if (persons.value == '') {
-			totalValue.innerHTML = 0;
+			total = 0;
+			totalValue.innerHTML = total;
 		} else totalValue.innerHTML = total;
 	});
 	//При изменении количества дней пересчитываем сумму
 	restDays.addEventListener('change', function() {
 		daysSum = +this.value;
 		total = daysSum*personsSum*ratio*4000;
+		console.log(ratio);
+		console.log(total);
 		if (restDays.value == '') {
-			totalValue.innerHTML = 0;
+			total = 0;
+			totalValue.innerHTML = total;
 		} else totalValue.innerHTML = total;
 	});
 	//При изменении базы меняем коэффициент и пересчитываем сумму
 	place.addEventListener('change', function() {
 		ratio = this.options[this.selectedIndex].value;
+		total = daysSum*personsSum*ratio*4000;
 		console.log(ratio);
+		console.log(total);
 		if (restDays.value == '' || persons.value == '') {
-			totalValue.innerHTML = 0;
+			total = 0;
+			totalValue.innerHTML = total;
 		} else {
-				totalValue.innerHTML = total*ratio;
+				totalValue.innerHTML = total;
 		};
 	});
 
