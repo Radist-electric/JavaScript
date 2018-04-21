@@ -202,6 +202,10 @@ button:focus {
   height: 65%;
 }
 
+.main-cards-item .candidate-block .result .progress-bar-3 {
+  height: 40%;
+}
+
 .main-cards-item .name {
   font-size: 16px;
   font-weight: 700;

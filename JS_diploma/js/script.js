@@ -14,16 +14,25 @@ window.addEventListener('DOMContentLoaded', function () {
 					customBio = document.getElementById('bio'),
      customReady = document.getElementById('ready'),
 					president = {
-					fullName: 'без имени',
-					age: 'сколько-то',
-					sex: 'Мужской',
-					views: 'Неопределённые',
-					biography: 'Умалчивается',
-					skin: '',
-					clothes: '',
-					hair: '',
-					shoes: ''
-					};
+						fullName: 'без имени',
+						age: 'сколько-то',
+						sex: 'Мужской',
+						views: 'Неопределённые',
+						biography: 'Умалчивается',
+						skin: '',
+						clothes: '',
+						hair: '',
+						shoes: ''
+					},
+					candidate = [];
+	for ( let i = 0; i <= 2; i++) {
+			candidate[i] = {
+				result: 0,
+				progress: 0
+			};
+	};
+
+
 
 
 	//Действия с модальным окном
@@ -97,6 +106,7 @@ window.addEventListener('DOMContentLoaded', function () {
     
 	//Показать окно для голосования
 	customReady.addEventListener('click', function() {
+		resetResults();
 		hideCustom();
   //Добавляем копию карточки кандидата
   let newCard = mainCards[1].cloneNode(true);
@@ -118,6 +128,14 @@ window.addEventListener('DOMContentLoaded', function () {
   																																																${president.hair},
   																																																${president.skin};
   																														background-size: cover;`;
+		let progress = document.querySelectorAll('.progress-bar');
+		progress[2].classList.remove('progress-bar-2');
+		progress[2].classList.add('progress-bar-3');
+		for (let i = 0; i < progress.length; i++) {
+			let bar = document.querySelector(`.progress-bar-${i + 1}`);
+				bar.style.height = candidate[i].progress + '%';
+		};
+
 		setTimeout(showVoting, 1500);
 	});
 
@@ -125,7 +143,9 @@ window.addEventListener('DOMContentLoaded', function () {
 	//Экран голосования
 	let reset = document.getElementById('reset'),
 					voting = document.getElementById('voting'),
-					crime = document.getElementById('crime');
+					crime = document.getElementById('crime'),
+					result = document.querySelectorAll('.result-count');
+					// progress = document.querySelectorAll('.progress-bar');
 	
 	reset.addEventListener('click', function() {
 		hideVoting();
@@ -310,9 +330,19 @@ window.addEventListener('DOMContentLoaded', function () {
 			main.classList.add('hide');
 		}, 1500);
 	};
+	//Сброс резльтатов
+	function resetResults() {
+		for (let i = 0; i < result.length; i++) {
+			result[i].innerHTML = candidate[i].result + '%';
+
+
+		};
+	};
+
 
 	console.log(president);
 	console.log(customViews);
 	console.log(mainCards);
+
 
 });
