@@ -28,27 +28,22 @@ window.addEventListener('DOMContentLoaded', function () {
 
 	//Действия с модальным окном
 	modal.classList.add('animated', 'bounceInUp');
-
+	//Нажимаем кнопку на модальном окне и переходим в окно кастомизации
 	modalBtn.addEventListener('click', function() {
 		setTimeout(function() {
-            overlay.classList.add('animated', 'fadeOut');
-        }, 500);
+   overlay.classList.add('animated', 'fadeOut');
+   }, 500);
 		modal.classList.remove('bounceInUp');
 		modal.classList.add('bounceOutUp');
-		main.style.display = "none";
-		custom.classList.add('show-flex');
-        setTimeout(function() {
-            for (let i = 0; i < custom.children.length; i++) {
-				custom.children[i].classList.add('show-block');
-            if (custom.children[i].classList.contains('custom-char')) {
-                custom.children[i].classList.add('animated', 'slideInDown');
-            } else
-                custom.children[i].classList.add('animated', 'slideInUp');
-		};
-        }, 1300);
+		main.classList.add('hide');
+  setTimeout(showCustom, 1300);
 		setTimeout(function() {overlay.style.display = "none"}, 2000);
 	});
 
+
+
+
+/*Манипуляции в окне кастомизации*/
 	//Получаем имя кандидата
 	customName.addEventListener('change', function() {
 		president.fullName = this.value;
@@ -102,12 +97,7 @@ window.addEventListener('DOMContentLoaded', function () {
     
 	//Показать окно для голосования
 	customReady.addEventListener('click', function() {
-  for (let i = 0; i < custom.children.length; i++) {
-  if (custom.children[i].classList.contains('custom-char')) {
-      custom.children[i].classList.add('animated', 'slideOutUp');
-  } else
-      custom.children[i].classList.add('animated', 'slideOutDown');
-  };
+		hideCustom();
   //Добавляем копию карточки кандидата
   let newCard = mainCards[1].cloneNode(true);
   mainCards[1].parentNode.insertBefore(newCard, mainCards[1].nextSibling);
@@ -128,13 +118,23 @@ window.addEventListener('DOMContentLoaded', function () {
   																																																${president.hair},
   																																																${president.skin};
   																														background-size: cover;`;
+		setTimeout(showVoting, 1500);
+	});
 
+
+	//Экран голосования
+	let reset = document.getElementById('reset'),
+					voting = document.getElementById('voting'),
+					crime = document.getElementById('crime');
+	
+	reset.addEventListener('click', function() {
+		hideVoting();
 		setTimeout(function() {
-	  custom.classList.remove('show-flex');
-	  custom.classList.add('hide');
-	  main.style.display = "block";
+			showCustom();
+			mainCards[2].remove();
 		}, 1500);
 	});
+
 
  //Персонаж
  let personSkin = document.getElementById('person-skin'),
@@ -249,7 +249,6 @@ window.addEventListener('DOMContentLoaded', function () {
 		});
 	};
 
-
 	function plusSkins(n) {
 		showSkins(skinIndex += n);
 	};
@@ -258,6 +257,58 @@ window.addEventListener('DOMContentLoaded', function () {
 	};
 	function plusHair(n) {
 		showHair(hairIndex += n);
+	};
+
+
+
+
+
+	//Показать окно кастомизации
+	function showCustom() {
+		custom.classList.remove('hide');
+		custom.classList.add('show-flex');
+		for (let i = 0; i < custom.children.length; i++) {
+			custom.children[i].classList.add('show-block');
+		 if (custom.children[i].classList.contains('custom-char')) {
+		     custom.children[i].classList.remove('animated', 'slideOutUp');
+		     custom.children[i].classList.add('animated', 'slideInDown');
+		   		} else {
+		       custom.children[i].classList.remove('animated', 'slideOutDown');
+		       custom.children[i].classList.add('animated', 'slideInUp');
+		      	};
+		};
+	};
+//Скрыть окно кастомизации
+	function hideCustom() {
+		for (let i = 0; i < custom.children.length; i++) {
+  if (custom.children[i].classList.contains('custom-char')) {
+  				custom.children[i].classList.remove('animated', 'slideInDown');
+      custom.children[i].classList.add('animated', 'slideOutUp');
+  } else {
+  				custom.children[i].classList.remove('animated', 'slideInUp');
+      custom.children[i].classList.add('animated', 'slideOutDown');
+     };
+  setTimeout(function() {
+   custom.classList.remove('show-flex');
+	  custom.classList.add('hide');
+  	}, 1500);
+  };
+	};
+	//Показать окно голосования
+	function showVoting() {
+  main.classList.remove('hide');
+  main.classList.add('show-block');
+  main.classList.remove('animated', 'fadeOutUpBig');
+  main.classList.add('animated', 'fadeInUpBig');
+	};
+	//Скрыть окно голосования
+	function hideVoting() {
+		main.classList.remove('animated', 'fadeInUpBig');
+		main.classList.add('animated', 'fadeOutUpBig');
+		setTimeout(function() {
+			main.classList.remove('show-block');
+			main.classList.add('hide');
+		}, 1500);
 	};
 
 	console.log(president);
