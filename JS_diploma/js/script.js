@@ -25,15 +25,14 @@ window.addEventListener('DOMContentLoaded', function () {
 						shoes: ''
 					},
 					candidate = [];
+	
+	//Заполняем нулями массив с кандидатами
 	for ( let i = 0; i <= 2; i++) {
 			candidate[i] = {
 				result: 0,
 				progress: 0
 			};
 	};
-
-
-
 
 	//Действия с модальным окном
 	modal.classList.add('animated', 'bounceInUp');
@@ -48,9 +47,6 @@ window.addEventListener('DOMContentLoaded', function () {
   setTimeout(showCustom, 1300);
 		setTimeout(function() {overlay.style.display = "none"}, 2000);
 	});
-
-
-
 
 /*Манипуляции в окне кастомизации*/
 	//Получаем имя кандидата
@@ -106,7 +102,10 @@ window.addEventListener('DOMContentLoaded', function () {
     
 	//Показать окно для голосования
 	customReady.addEventListener('click', function() {
-		resetResults();
+	for ( let i = 0; i <= 2; i++) {
+			candidate[i].result = 0;
+	};
+		setResults();
 		hideCustom();
   //Добавляем копию карточки кандидата
   let newCard = mainCards[1].cloneNode(true);
@@ -128,25 +127,23 @@ window.addEventListener('DOMContentLoaded', function () {
   																																																${president.hair},
   																																																${president.skin};
   																														background-size: cover;`;
+  //Меняем у третьего кандидата скопированный класс progress-bar-2 на progress-bar-3
 		let progress = document.querySelectorAll('.progress-bar');
 		progress[2].classList.remove('progress-bar-2');
 		progress[2].classList.add('progress-bar-3');
-		for (let i = 0; i < progress.length; i++) {
-			let bar = document.querySelector(`.progress-bar-${i + 1}`);
-				bar.style.height = candidate[i].progress + '%';
+		for ( let i = 0; i <= 2; i++) {
+				candidate[i].progress = 0;
 		};
-
+		setProgress();
 		setTimeout(showVoting, 1500);
 	});
-
 
 	//Экран голосования
 	let reset = document.getElementById('reset'),
 					voting = document.getElementById('voting'),
-					crime = document.getElementById('crime'),
-					result = document.querySelectorAll('.result-count');
-					// progress = document.querySelectorAll('.progress-bar');
-	
+					crime = document.getElementById('crime');
+
+	//Сброс результатов и возврат на страницу кастомизации
 	reset.addEventListener('click', function() {
 		hideVoting();
 		setTimeout(function() {
@@ -155,13 +152,22 @@ window.addEventListener('DOMContentLoaded', function () {
 		}, 1500);
 	});
 
+	//Честное голосование
+	voting.addEventListener('click', function() {
+		console.log('Honest voting');
+		startVoting(0);
+	});
+
+	//Вмешательство в выборы
+	crime.addEventListener('click', function() {
+		console.log('Crime voting');
+		startVoting(25);
+	});
 
  //Персонаж
  let personSkin = document.getElementById('person-skin'),
  				personClothes = document.getElementById('person-clothes'),
  				personHair = document.getElementById('person-hair');
-
-
 
 	//Слайдер
 	let skin = document.querySelector('.skin'),
@@ -279,10 +285,6 @@ window.addEventListener('DOMContentLoaded', function () {
 		showHair(hairIndex += n);
 	};
 
-
-
-
-
 	//Показать окно кастомизации
 	function showCustom() {
 		custom.classList.remove('hide');
@@ -298,6 +300,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		      	};
 		};
 	};
+
 //Скрыть окно кастомизации
 	function hideCustom() {
 		for (let i = 0; i < custom.children.length; i++) {
@@ -314,6 +317,7 @@ window.addEventListener('DOMContentLoaded', function () {
   	}, 1500);
   };
 	};
+
 	//Показать окно голосования
 	function showVoting() {
   main.classList.remove('hide');
@@ -321,6 +325,7 @@ window.addEventListener('DOMContentLoaded', function () {
   main.classList.remove('animated', 'fadeOutUpBig');
   main.classList.add('animated', 'fadeInUpBig');
 	};
+
 	//Скрыть окно голосования
 	function hideVoting() {
 		main.classList.remove('animated', 'fadeInUpBig');
@@ -330,19 +335,42 @@ window.addEventListener('DOMContentLoaded', function () {
 			main.classList.add('hide');
 		}, 1500);
 	};
-	//Сброс резльтатов
-	function resetResults() {
+
+	//Сброс результатов
+	function setResults() {
+		result = document.querySelectorAll('.result-count');
 		for (let i = 0; i < result.length; i++) {
 			result[i].innerHTML = candidate[i].result + '%';
-
-
 		};
 	};
 
+	//Сброс шкалы прогресса
+	function setProgress() {
+		let progress = document.querySelectorAll('.progress-bar');
+		for (let i = 0; i < progress.length; i++) {
+			let bar = document.querySelector(`.progress-bar-${i + 1}`);
+			bar.style.height = candidate[i].progress + '%';
+		};
+	};
 
-	console.log(president);
-	console.log(customViews);
-	console.log(mainCards);
+	//Генератор случайных целых чисел
+	function getRandomInRange(min, max) {
+	 return Math.floor(Math.random() * (max - min + 1)) + min;
+	};
+
+	//Голосование
+	function startVoting(bonus) {
+		let results = [];
+					 results[0] = getRandomInRange(0, 100 - bonus),
+						results[1] = getRandomInRange(0, 100 - bonus - results[0]),
+						results[2] = 100 - results[1] - results[0];
+		for ( let i = 0; i <= 2; i++) {
+				candidate[i].result = results[i];
+				candidate[i].progress = results[i];
+		};
+		setResults();
+		setProgress();
+	};
 
 
 });
