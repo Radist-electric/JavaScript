@@ -5,6 +5,7 @@ window.addEventListener('DOMContentLoaded', function () {
 					main = document.getElementsByClassName('main')[0],
 					mainCards = main.getElementsByClassName('main-cards-item'),
 					custom = document.getElementsByClassName('custom')[0],
+					customInfo = custom.getElementsByClassName('custom-info')[0],
 					customName = document.getElementById('name'),
 					customAge = document.getElementById('age'),
 					customRadio = custom.getElementsByClassName('radio')[0],
@@ -24,7 +25,18 @@ window.addEventListener('DOMContentLoaded', function () {
 						hair: '',
 						shoes: ''
 					},
-					candidate = [];
+					candidate = [],
+					ageMessage = document.getElementById('age-message'),
+					showAgeMessage = {
+						nan: 'Введите приемлемое число',
+						young: 'Несовершеннолетним нельзя баллотироваться!',
+						old: 'В таком возрасте люди на пенсии отдыхают!',
+						veryOld: 'Ваш возраст вызывает огромные сомнения!'
+					},
+					customOk = {
+						name: false,
+						age: false
+					};
 	
 	//Заполняем нулями массив с кандидатами
 	for ( let i = 0; i <= 2; i++) {
@@ -33,7 +45,9 @@ window.addEventListener('DOMContentLoaded', function () {
 				progress: 0
 			};
 	};
-
+	//Отключаем бордюр для полей ввода
+	customName.classList.add('input-border');
+	customAge.classList.add('input-border');
 	//Действия с модальным окном
 	modal.classList.add('animated', 'bounceInUp');
 	//Нажимаем кнопку на модальном окне и переходим в окно кастомизации
@@ -48,23 +62,83 @@ window.addEventListener('DOMContentLoaded', function () {
 		setTimeout(function() {overlay.style.display = "none"}, 2000);
 	});
 
-/*Манипуляции в окне кастомизации*/
 	//Получаем имя кандидата
 	customName.addEventListener('change', function() {
-		president.fullName = this.value;
+		customOk.name = false;
+		let name = this.value;
+		//Удаляем все символы, кроме русских букв
+			name = name.replace(/\w/g, '');
+		//Удаляем все пробелы в начале строки
+		for (let i = 0; i < name.length; i++) {
+			if (name.charAt(0) == ' ') {
+				name = name.replace(/\s/, '');
+			} else {
+					break
+			};
+		};
+		//Удаляем все пробелы в конце строки
+		for (let i = name.length; i > 0; i--) {
+			if (name.charAt(name.length - 1) == ' ') {
+				name = name.substring(0, name.length - 1);
+			} else {
+				break
+			};
+		};
+		//Записываем обратно в поле ввода имя без боковых пробелов
+		this.value = name;
+		//Проверям имя на длину
+		if (name.length < 3) {
+			customName.style.color = '#ff0000';
+			customName.classList.remove('input-border');
+			customName.classList.add('input-border-alarm');
+		} else {
+			customName.style.color = '#ffffff';
+			customName.classList.remove('input-border-alarm');
+			customName.classList.add('input-border');
+			customOk.name = true;
+			if (customOk.age == true && customOk.name == true) {
+				customInfo.style.border = 'none';
+			};
+		};
+		president.fullName = name;
 		console.log(president);
 	});
 
 		//Получаем возраст кандидата
 		customAge.addEventListener('change', function() {
-		let age = this.value;
-		//Если кроме чисел присутствуют другие знаки, то очищаем поле
-		if (isNaN(age) == true) {
-			age = '';
-			this.value = age;
-			president.age = age;
-		} else president.age = age;
-		console.log(president);
+			customOk.age = false;
+			let age = this.value.replace(/\s/g, '');
+			if (isNaN(age) == true || age.length == 0 || age == '0') {
+				age = '';
+				this.value = age;
+				ageMessage.innerHTML = showAgeMessage.nan;
+			} else if (age < 18) {
+					customAge.style.color = '#ff0000';
+					customAge.classList.remove('input-border');
+					customAge.classList.add('input-border-alarm');
+					ageMessage.innerHTML = showAgeMessage.young;
+			}	else if (age >= 65 && age < 100) {
+					customAge.style.color = '#ff0000';
+					customAge.classList.remove('input-border');
+					customAge.classList.add('input-border-alarm');
+					ageMessage.innerHTML = showAgeMessage.old;
+			} else if (age >= 100) {
+					customAge.style.color = '#ff0000';
+					customAge.classList.remove('input-border');
+					customAge.classList.add('input-border-alarm');
+					ageMessage.innerHTML = showAgeMessage.veryOld;
+			}	else {
+				customOk.age = true;
+				customAge.style.color = '#ffffff';
+				customAge.classList.remove('input-border-alarm');
+				customAge.classList.add('input-border');
+				president.age = age;
+				ageMessage.innerHTML = '';
+				if (customOk.age == true && customOk.name == true) {
+					customInfo.style.border = 'none';
+				};
+				console.log(president);
+			};
 	});
 
 	//При запуске страницы задаём пол, взгляды по умолчанию, а также надеваем обувь
@@ -100,43 +174,23 @@ window.addEventListener('DOMContentLoaded', function () {
 		console.log(president);
 	});
     
-	//Показать окно для голосования
+	//Определяем, можно ли голосовать
 	customReady.addEventListener('click', function() {
-	for ( let i = 0; i <= 2; i++) {
-			candidate[i].result = 0;
-	};
-		setResults();
-		hideCustom();
-  //Добавляем копию карточки кандидата
-  let newCard = mainCards[1].cloneNode(true);
-  mainCards[1].parentNode.insertBefore(newCard, mainCards[1].nextSibling);
-  //Записываем в эту карточку данные нового кандидата
-  let newCardName = newCard.querySelector('.name'),
-  				newCardAge = newCard.querySelector('.age'),
-  				newCardSex = newCard.querySelector('.sex'),
-  				newCardViews = newCard.querySelector('.views'),
-  				newCardBio = newCard.querySelector('.bio'),
-  				newCardPhoto = newCard.querySelector('.photo');
-  newCardName.innerHTML = president.fullName;
-  newCardAge.innerHTML = `${president.age} лет`;
-  newCardSex.innerHTML = president.sex;
-  newCardViews.innerHTML = president.views;
-  newCardBio.innerHTML = president.biography;
-  newCardPhoto.style.cssText = `background-image: ${president.shoes},
-  																																																${president.clothes},
-  																																																${president.hair},
-  																																																${president.skin};
-  																														background-size: cover;`;
-  //Меняем у третьего кандидата скопированный класс progress-bar-2 на progress-bar-3
-		let progress = document.querySelectorAll('.progress-bar');
-		progress[2].classList.remove('progress-bar-2');
-		progress[2].classList.add('progress-bar-3');
-		for ( let i = 0; i <= 2; i++) {
-				candidate[i].progress = 0;
-		};
-		setProgress();
-		setTimeout(showVoting, 1500);
+		if (customOk.name == false || customOk.age == false) {
+			console.log('Нельзя голосовать!');
+			console.log(customInfo);
+			customInfo.style.border = 'double 2px #ff0000';
+			if (customOk.name == false) {
+				customName.classList.remove('input-border');
+				customName.classList.add('input-border-alarm');
+			}
+			if (customOk.age == false) {
+				customAge.classList.remove('input-border');
+				customAge.classList.add('input-border-alarm');
+			}
+		} else tryVoting();
 	});
+
 
 	//Экран голосования
 	let reset = document.getElementById('reset'),
@@ -285,6 +339,44 @@ window.addEventListener('DOMContentLoaded', function () {
 		showHair(hairIndex += n);
 	};
 
+	//Пытаемся начать голосование
+ function tryVoting() {
+		for ( let i = 0; i <= 2; i++) {
+				candidate[i].result = 0;
+		};
+			setResults();
+			hideCustom();
+	  //Добавляем копию карточки кандидата
+	  let newCard = mainCards[1].cloneNode(true);
+	  mainCards[1].parentNode.insertBefore(newCard, mainCards[1].nextSibling);
+	  //Записываем в эту карточку данные нового кандидата
+	  let newCardName = newCard.querySelector('.name'),
+	  				newCardAge = newCard.querySelector('.age'),
+	  				newCardSex = newCard.querySelector('.sex'),
+	  				newCardViews = newCard.querySelector('.views'),
+	  				newCardBio = newCard.querySelector('.bio'),
+	  				newCardPhoto = newCard.querySelector('.photo');
+	  newCardName.innerHTML = president.fullName;
+	  newCardAge.innerHTML = `${president.age} лет`;
+	  newCardSex.innerHTML = president.sex;
+	  newCardViews.innerHTML = president.views;
+	  newCardBio.innerHTML = president.biography;
+	  newCardPhoto.style.cssText = `background-image: ${president.shoes},
+	  																																																${president.clothes},
+	  																																																${president.hair},
+	  																																																${president.skin};
+	  																														background-size: cover;`;
+	  //Меняем у третьего кандидата скопированный класс progress-bar-2 на progress-bar-3
+			let progress = document.querySelectorAll('.progress-bar');
+			progress[2].classList.remove('progress-bar-2');
+			progress[2].classList.add('progress-bar-3');
+			for ( let i = 0; i <= 2; i++) {
+					candidate[i].progress = 0;
+			};
+			setProgress();
+			setTimeout(showVoting, 1500);
+ };
+
 	//Показать окно кастомизации
 	function showCustom() {
 		custom.classList.remove('hide');
@@ -292,24 +384,24 @@ window.addEventListener('DOMContentLoaded', function () {
 		for (let i = 0; i < custom.children.length; i++) {
 			custom.children[i].classList.add('show-block');
 		 if (custom.children[i].classList.contains('custom-char')) {
-		     custom.children[i].classList.remove('animated', 'slideOutUp');
-		     custom.children[i].classList.add('animated', 'slideInDown');
+		     custom.children[i].classList.remove('animated', 'fadeOutUp');
+		     custom.children[i].classList.add('animated', 'fadeInDown');
 		   		} else {
-		       custom.children[i].classList.remove('animated', 'slideOutDown');
-		       custom.children[i].classList.add('animated', 'slideInUp');
+		       custom.children[i].classList.remove('animated', 'fadeOutDown');
+		       custom.children[i].classList.add('animated', 'fadeInUp');
 		      	};
 		};
 	};
 
-//Скрыть окно кастомизации
+	//Скрыть окно кастомизации
 	function hideCustom() {
 		for (let i = 0; i < custom.children.length; i++) {
   if (custom.children[i].classList.contains('custom-char')) {
-  				custom.children[i].classList.remove('animated', 'slideInDown');
-      custom.children[i].classList.add('animated', 'slideOutUp');
+  				custom.children[i].classList.remove('animated', 'fadeInDown');
+      custom.children[i].classList.add('animated', 'fadeOutUp');
   } else {
-  				custom.children[i].classList.remove('animated', 'slideInUp');
-      custom.children[i].classList.add('animated', 'slideOutDown');
+  				custom.children[i].classList.remove('animated', 'fadeInUp');
+      custom.children[i].classList.add('animated', 'fadeOutDown');
      };
   setTimeout(function() {
    custom.classList.remove('show-flex');
@@ -320,6 +412,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
 	//Показать окно голосования
 	function showVoting() {
+		resetFrame();
   main.classList.remove('hide');
   main.classList.add('show-block');
   main.classList.remove('animated', 'fadeOutUpBig');
@@ -336,7 +429,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		}, 1500);
 	};
 
-	//Сброс результатов
+	//Установка результатов
 	function setResults() {
 		result = document.querySelectorAll('.result-count');
 		for (let i = 0; i < result.length; i++) {
@@ -344,7 +437,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		};
 	};
 
-	//Сброс шкалы прогресса
+	//Установка шкалы прогресса
 	function setProgress() {
 		let progress = document.querySelectorAll('.progress-bar');
 		for (let i = 0; i < progress.length; i++) {
@@ -370,7 +463,23 @@ window.addEventListener('DOMContentLoaded', function () {
 		};
 		setResults();
 		setProgress();
+		setFrame();
 	};
 
+	//Установка синей рамки для победителя выборов
+	function setFrame() {
+		resetFrame();
+		let maximum = Math.max(candidate[0].result, candidate[1].result, candidate[2].result);
+		for (let i = 0; i <= 2; i++) {
+			if (candidate[i].result == maximum) {
+					mainCards[i].classList.add('main-cards-item-active');
+			};
+		};
+	};
+	function resetFrame() {
+		for (let i = 0; i < mainCards.length; i++) {
+			mainCards[i].classList.remove('main-cards-item-active');
+		};
+	};
 
 });

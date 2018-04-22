@@ -12,7 +12,7 @@
 	<!-- Main Page -->
 	<div class="main">
 		<div class="main-cards">
-			<div class="main-cards-item main-cards-item-active">
+			<div class="main-cards-item">
 				<div class="candidate-block">
 					<div class="photo photo-1"></div>
 					<div class="result">
@@ -74,9 +74,10 @@
 	<div class="custom">
 		<div class="custom-info">
 			<label for="name">Фамилия Имя Отчество</label>
-			<input type="text" id="name">
+			<input type="text" id="name" placeholder="Не менее трёх русских букв">
 			<label for="age">Возраст, лет</label>
 			<input type="text" id="age">
+			<div id="age-message"></div>
 			<div class="radio">
 				<input value="Мужской" id="male" checked name="sex" type="radio">
 				<label for="sex">Мужчина</label>

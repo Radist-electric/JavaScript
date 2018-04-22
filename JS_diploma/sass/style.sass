@@ -218,7 +218,7 @@ button
     .popup
         position: fixed
         z-index: 4
-        left: 35%
+        left: 30%
         top: 150px
         width: 570px
         height: 254px
@@ -272,6 +272,7 @@ button
     justify-content: space-around
     padding-top: 30px
     &-info
+        position: relative
         display: none
         padding-top: 10px
         width: 370px
@@ -293,7 +294,7 @@ button
             height: 60px
             border-radius: 30px
             background-color: #1c2028
-            border: none
+            // border: none
             color: #ffffff
             font-size: 13px
             font-weight: 500
@@ -301,6 +302,12 @@ button
             padding: 0 15px
             &:focus
                 border: 2px solid rgba(31,140,226,.8)
+        #age-message
+            position: absolute
+            width: 100%
+            top: 240px
+            font-size: 12px
+            color: #ff0000
         .radio
             display: flex
             align-items: center
@@ -539,3 +546,7 @@ button
     display: block
 .hide
     display: none
+.input-border
+    border: none
+    &-alarm
+        border: solid 1px #ff0000
