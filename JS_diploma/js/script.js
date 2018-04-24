@@ -9,17 +9,18 @@ window.addEventListener('DOMContentLoaded', function () {
 					customName = document.getElementById('name'),
 					customAge = document.getElementById('age'),
 					customRadio = custom.getElementsByClassName('radio')[0],
+					customRadioMale = document.getElementById('male'),
 					customSex = document.getElementsByName('sex'),
 					customSelect = document.getElementById('select'),
 					customViews = customSelect.options[customSelect.selectedIndex].value,
 					customBio = document.getElementById('bio'),
      customReady = document.getElementById('ready'),
 					president = {
-						fullName: 'без имени',
-						age: 'сколько-то',
-						sex: 'Мужской',
-						views: 'Неопределённые',
-						biography: 'Умалчивается',
+						fullName: '',
+						age: '',
+						sex: '',
+						views: '',
+						biography: '',
 						skin: '',
 						clothes: '',
 						hair: '',
@@ -35,9 +36,28 @@ window.addEventListener('DOMContentLoaded', function () {
 					},
 					customOk = {
 						name: false,
-						age: false
+						age: false,
+						bio: false
 					};
 	
+ //Персонаж
+ let personSkin = document.getElementById('person-skin'),
+ 				personClothes = document.getElementById('person-clothes'),
+ 				personHair = document.getElementById('person-hair');
+
+	//Слайдер
+	let skin = document.querySelector('.skin'),
+					skinColor = skin.getElementsByClassName('skin-color'),
+					hair = document.querySelector('.hair'),
+					hairStyle = hair.getElementsByClassName('hair-style'),
+					clothes = document.querySelector('.clothes'),
+					clothesStyle = clothes.getElementsByClassName('clothes-style'),
+					prev = document.getElementsByClassName('prev'),
+					next = document.getElementsByClassName('next'),
+					skinIndex = 1,
+					clothesIndex = 1,
+					hairIndex = 1;
+
 	//Заполняем нулями массив с кандидатами
 	for ( let i = 0; i <= 2; i++) {
 			candidate[i] = {
@@ -45,9 +65,8 @@ window.addEventListener('DOMContentLoaded', function () {
 				progress: 0
 			};
 	};
-	//Отключаем бордюр для полей ввода
-	customName.classList.add('input-border');
-	customAge.classList.add('input-border');
+
+	resetCandidate();
 	//Действия с модальным окном
 	modal.classList.add('animated', 'bounceInUp');
 	//Нажимаем кнопку на модальном окне и переходим в окно кастомизации
@@ -96,7 +115,7 @@ window.addEventListener('DOMContentLoaded', function () {
 			customName.classList.remove('input-border-alarm');
 			customName.classList.add('input-border');
 			customOk.name = true;
-			if (customOk.age == true && customOk.name == true) {
+			if (customOk.age == true && customOk.name == true && customOk.bio == true) {
 				customInfo.style.border = 'none';
 			};
 		};
@@ -134,7 +153,7 @@ window.addEventListener('DOMContentLoaded', function () {
 				customAge.classList.add('input-border');
 				president.age = age;
 				ageMessage.innerHTML = '';
-				if (customOk.age == true && customOk.name == true) {
+				if (customOk.age == true && customOk.name == true && customOk.bio == true) {
 					customInfo.style.border = 'none';
 				};
 				console.log(president);
@@ -170,24 +189,64 @@ window.addEventListener('DOMContentLoaded', function () {
 
 	//Получаем биографию кандидата
 	customBio.addEventListener('change', function() {
+		customOk.bio = false;
+		let bio = this.value;
+		//Удаляем все символы, кроме русских букв
+			bio = bio.replace(/\w/g, '');
+		//Удаляем все пробелы в начале строки
+		for (let i = 0; i < bio.length; i++) {
+			if (bio.charAt(0) == ' ') {
+				bio = bio.replace(/\s/, '');
+			} else {
+					break
+			};
+		};
+		//Удаляем все пробелы в конце строки
+		for (let i = bio.length; i > 0; i--) {
+			if (bio.charAt(bio.length - 1) == ' ') {
+				bio = bio.substring(0, bio.length - 1);
+			} else {
+				break
+			};
+		};
+		//Записываем обратно в поле ввода имя без боковых пробелов
+		this.value = bio;
+		//Проверям имя на длину
+		if (bio.length <= 10) {
+			customBio.style.color = '#ff0000';
+			customBio.classList.remove('input-border');
+			customBio.classList.add('input-border-alarm');
+		} else {
+			customBio.style.color = '#ffffff';
+			customBio.classList.remove('input-border-alarm');
+			customBio.classList.add('input-border');
+			customOk.bio = true;
+			if (customOk.age == true && customOk.name == true && customOk.bio == true) {
+				customInfo.style.border = 'none';
+			};
+		};
 		president.biography = this.value;
 		console.log(president);
 	});
     
 	//Определяем, можно ли голосовать
 	customReady.addEventListener('click', function() {
-		if (customOk.name == false || customOk.age == false) {
+		if (customOk.name == false || customOk.age == false || customOk.bio == false) {
 			console.log('Нельзя голосовать!');
 			console.log(customInfo);
 			customInfo.style.border = 'double 2px #ff0000';
 			if (customOk.name == false) {
 				customName.classList.remove('input-border');
 				customName.classList.add('input-border-alarm');
-			}
+			};
 			if (customOk.age == false) {
 				customAge.classList.remove('input-border');
 				customAge.classList.add('input-border-alarm');
-			}
+			};
+			if (customOk.bio == false) {
+				customBio.classList.remove('input-border');
+				customBio.classList.add('input-border-alarm');
+			};
 		} else tryVoting();
 	});
 
@@ -201,6 +260,7 @@ window.addEventListener('DOMContentLoaded', function () {
 	reset.addEventListener('click', function() {
 		hideVoting();
 		setTimeout(function() {
+			resetCandidate();
 			showCustom();
 			mainCards[2].remove();
 		}, 1500);
@@ -217,24 +277,6 @@ window.addEventListener('DOMContentLoaded', function () {
 		console.log('Crime voting');
 		startVoting(25);
 	});
-
- //Персонаж
- let personSkin = document.getElementById('person-skin'),
- 				personClothes = document.getElementById('person-clothes'),
- 				personHair = document.getElementById('person-hair');
-
-	//Слайдер
-	let skin = document.querySelector('.skin'),
-					skinColor = skin.getElementsByClassName('skin-color'),
-					hair = document.querySelector('.hair'),
-					hairStyle = hair.getElementsByClassName('hair-style'),
-					clothes = document.querySelector('.clothes'),
-					clothesStyle = clothes.getElementsByClassName('clothes-style'),
-					prev = document.getElementsByClassName('prev'),
-					next = document.getElementsByClassName('next'),
-					skinIndex = 1,
-					clothesIndex = 1,
-					hairIndex = 1;
 
 	//Показываем кожу
 	showSkins(skinIndex);
@@ -454,8 +496,8 @@ window.addEventListener('DOMContentLoaded', function () {
 	//Голосование
 	function startVoting(bonus) {
 		let results = [];
-					 results[0] = getRandomInRange(0, 100 - bonus),
-						results[1] = getRandomInRange(0, 100 - bonus - results[0]),
+					 results[0] = getRandomInRange(1, 100 - bonus),
+						results[1] = getRandomInRange(1, 100 - bonus - results[0]),
 						results[2] = 100 - results[1] - results[0];
 		for ( let i = 0; i <= 2; i++) {
 				candidate[i].result = results[i];
@@ -480,6 +522,37 @@ window.addEventListener('DOMContentLoaded', function () {
 		for (let i = 0; i < mainCards.length; i++) {
 			mainCards[i].classList.remove('main-cards-item-active');
 		};
+	};
+
+	//Сброс всех данных кандидата
+	function resetCandidate() {
+		//Делаем красный бордюр для полей ввода
+		customName.classList.add('input-border-alarm');
+		customAge.classList.add('input-border-alarm');
+		customBio.classList.add('input-border-alarm');
+		customInfo.style.border = 'double 2px #ff0000';
+		//Сбрасываем все значения кандидата на первоначальные
+		president.fullName = '';
+		president.age = '';
+		president.sex = 'Мужской';
+		president.views = '';
+		president.biography = '';
+		customOk.name = false;
+		customOk.age = false;
+		customOk.bio = false;
+		//Первоначальные значения записываем в поля
+		customName.value = president.fullName;
+		customAge.value = president.age;
+		customBio.value = president.biography;
+		customRadioMale.checked = true;
+		customSelect.selectedIndex  = 0;
+
+		skinIndex = 1,
+		clothesIndex = 1,
+		hairIndex = 1;
+		showSkins(skinIndex);
+		showClothes(clothesIndex);
+		showHair(hairIndex);
 	};
 
 });
