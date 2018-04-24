@@ -496,8 +496,8 @@ window.addEventListener('DOMContentLoaded', function () {
 	//Голосование
 	function startVoting(bonus) {
 		let results = [];
-					 results[0] = getRandomInRange(1, 100 - bonus),
-						results[1] = getRandomInRange(1, 100 - bonus - results[0]),
+					 results[0] = 1 + getRandomInRange(0, 97 - bonus),
+						results[1] = 1 + getRandomInRange(0, 98 - bonus - results[0]),
 						results[2] = 100 - results[1] - results[0];
 		for ( let i = 0; i <= 2; i++) {
 				candidate[i].result = results[i];
